@@ -5,11 +5,34 @@ The goal of this repo is to export the [OpenAI CLIP RN50](https://github.com/ope
 Exporting to onnx is not complicated, but since onnx-js has a lot of missing features, we need to rewrite some part of the model from scratch (ex. flatten, averagepooling).
 
 
-> This repo is still in construction…
-> Stay tuned !
+
+## How to launch (and quick sanity check)
+
+```bash
+# 1) launch the clip exporting script:
+$ python export_clip_rn50_to_onnx.py
+
+# 2) launch the webserver
+$ python -m http.server 
+
+# 3) go at http://localhost:8000/ load the model and compute the embedding
+# this should export and download the computed embedding if a file named
+# `ebds.json` (check your downloads files)… move this file into this dir
+$ # manual step…
+
+# 4) compute the cosine similarity between the python and the js 
+# embeddings version of the exact same image
+$ python compare_onnx_python_ebds_with_onnx_js.py 
+```
+
+After following all these steps, you should have somthing like that printed on your terminal:
+`cos sim: 0.9890805389150994`
 
 
-## Issue with the AvgPool2d layer
+
+## Disscussing the issues encoutred in the conversion
+
+### Issue with the AvgPool2d layer
 
 When you try to load a the onnx exported version of the CLIP RN50 in onnx.js you will face to this issue: 
 
@@ -75,7 +98,7 @@ def make_avgpool2d_from_conv(n_channels, kernel_size):
     return avgpool2d
 ```
 
-## Issue with .flatten()
+### Issue with .flatten()
 
 This one is simpler, since flatten is not implemented in onnx.js, you just need to re-write your own flatten operation with a `.view`.
 

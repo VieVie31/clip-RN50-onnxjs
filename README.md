@@ -26,7 +26,7 @@ $ python compare_onnx_python_ebds_with_onnx_js.py
 ```
 
 After following all these steps, you should have somthing like that printed on your terminal:
-`cos sim: 0.9890805389150994`
+> `cos sim: 0.9890805389150994`
 
 
 
@@ -36,7 +36,7 @@ After following all these steps, you should have somthing like that printed on y
 
 When you try to load a the onnx exported version of the CLIP RN50 in onnx.js you will face to this issue: 
 
-[AvgPool2d issue pad](./imgs/avg_pool_pad_issue.png)
+![AvgPool2d issue pad](./imgs/avg_pool_pad_issue.png)
 
 However if you export the default pytorch ResNet50 you don't face it. 
 It's due to the fact that CLIP use average pooling while the traditionnal resnet is using max pooling.

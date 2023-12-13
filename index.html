@@ -5,12 +5,29 @@
     <!-- <script src="https://cdn.jsdelivr.net/npm/onnxjs/dist/onnx.min.js"></script> -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/onnxjs@0.1.7/dist/onnx.min.js"></script> -->
     <script src="./onnx.min.js"></script>
-    
-    <input id="imgUrl" type="text" placeholder="image url" value="./image224.jpg"/>
-    <button onclick="load_model()">Load model</button>
-    <button onclick="extract_ebds()">Comute embeddings</button>
+    <script src="http://danml.com/js/download.js"></script>
 
-    <canvas id="canvas" style="display: none;"></canvas>
+
+    <h1>Extract CLIP RN50 embedding</h1>
+
+    <div>
+      This is just for demo, the preprocessing step on image is not applied, images are just [0, 1] normalized before fed to the model.
+      Thus ebds differ from the real ebds with the whole pre-processing.
+      <br/>
+      Warning: only give as input already 224x224 cropped images. (as I told you I didn't implemented the preprocessing step).
+      <br/>
+    </div>
+    
+    <div>
+      <input id="imgUrl" type="text" placeholder="image url" value="./image224.jpg"/>
+      <button onclick="load_model()">Load model</button>
+      <button onclick="extract_ebds()">Comute and Download embeddings</button>
+
+      <div id="info"></div>
+    </div>
+    
+
+    <canvas id="canvas"></canvas>
     
     <script>
         async function loadImage(url) {
@@ -56,18 +73,21 @@
 
 
       async function load_model() {
-          console.log("loading model");
+          document.getElementById("info").innerText = "loading model";
           await myOnnxSession.loadModel("./clip_rn50.onnx");
-          console.log("model loaded!");
+          document.getElementById("info").innerText = "model loaded!";
       }
 
       async function extract_ebds() {
+        document.getElementById("info").innerText = "loading model";
         url = document.getElementById("imgUrl").value;
         myImageTensor = await imageToTensor(url);
-        console.log("image loaded")
+        document.getElementById("info").innerText = "image loaded…\nextracting embedding…";
         o = await myOnnxSession.run([myImageTensor]);
         ebd = o.values().next().value;
         console.log(ebd)
+        document.getElementById("info").innerText = "embedding computed (you can check the console)\ndownloading embedding…"
+        download(JSON.stringify(ebd.data), "ebd.json", "text/json")
       }
 
     </script>
